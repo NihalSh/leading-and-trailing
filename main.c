@@ -42,7 +42,50 @@ int main()
 		}
 	}
 */
+	computeLeading(variables, terminals, productions);
 	return 0;
+}
+
+int computeLeading(int * variables, int * terminals, Production productions[256])
+{
+	int i;
+	int j;
+	int k;
+	printf("\nLeading\n");
+	for (i = 0; i < 256; i++) {
+		if (variables[i]) {
+			printf("%c => { ", i);
+			//iterate over the production for a given symbol
+			for (j = 0; j < productions[i].number; j++) {
+				int loopOnVariable = i;
+				char firstVariable = '\0';
+				char firstTerminal = '\0';
+				char currSymbol = '\0';
+				while (loopOnVariable != '\0') {
+					firstVariable = '\0';
+					for (k = 0; k < productions[loopOnVariable].list[j].number; k++) {
+						currSymbol = productions[loopOnVariable].list[j].c[k];
+						if (terminals[currSymbol]) {
+							firstTerminal = currSymbol;
+							printf("%c ", firstTerminal);
+							break;
+						} else if (variables[currSymbol]) {
+							if ((firstVariable == '\0')) {
+								firstVariable = currSymbol;
+							}
+						} else if (currSymbol == '\0') {
+							//null symbol
+							;
+						}else {
+							printf("error: no idea what happended, character = %c\n", currSymbol);
+						}
+					}
+					loopOnVariable = firstVariable;
+				}
+			}
+			printf("}\n");
+		}
+	}
 }
 
 int getInput(int * variables, int * terminals, Production productions[256])
