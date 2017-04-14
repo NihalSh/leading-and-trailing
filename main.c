@@ -12,6 +12,13 @@ typedef struct {
 	Body * list;
 } Production;
 
+int getInput(int * variables, int * terminals, Production productions[256]);
+int computeLeading(int * variables, int * terminals, Production productions[256]);
+int computeTrailing(int * variables, int * terminals, Production productions[256]);
+int isNullable(Production production);
+int expand(int * variables, int ** leadingOrTrailing);
+int display(int * variables, int ** leading);
+
 int main()
 {
 	int variables[256] = {0};
@@ -197,7 +204,8 @@ int display(int * variables, int ** leading)
 	return 0;
 }
 
-int isNullable(Production production) {
+int isNullable(Production production)
+{
 	int i;
 	for (i = 0; i < production.number; i++) {
 		if (production.list[i].number && (production.list[i].c[0] == '\0')) {
