@@ -92,8 +92,39 @@ int computeLeading(int * variables, int * terminals, Production productions[256]
 			}
 		}
 	}
+	expand(variables, leading);
 	printf("\nLeading\n");
 	display(variables, leading);
+}
+
+int expand(int * variables, int ** leadingOrTrailing)
+{
+	int i;
+	int j;
+	int k;
+	for (i = 0; i < 256; i++) {
+		if (variables[i]) {
+			int boolean = 1;
+			int z = 3;
+			while (boolean) {
+				boolean = 0;
+				for (j = 0; j < 256; j++) {
+					if ((leadingOrTrailing[i][j] == 1) && variables[j]) {
+						boolean = 1;
+						//copy leadingOrTrailing of variable 'j' into 'i'
+						for (k = 0; k < 256; k++) {
+							if ((leadingOrTrailing[j][k] == 1) && (leadingOrTrailing[i][k] == 0)) {
+								//printf("Expanding: %c, Expanding with: %c, %c\n", i, j, k);
+								leadingOrTrailing[i][k] = 1;
+							}
+						}
+						leadingOrTrailing[i][j] = -1;
+
+					}
+				}
+			}
+		}
+	}
 }
 
 int display(int * variables, int ** leading)
