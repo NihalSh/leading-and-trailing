@@ -25,30 +25,6 @@ int main()
 	int terminals[256] = {0};
 	Production productions[256];
 	getInput(variables, terminals, productions);
-/*
-	int i;
-	int j;
-	for (i = 0; i < 256; i++) {
-		if (variables[i]) {
-			printf("%c ", i);
-		}
-	}
-	printf("\n");
-	for (i = 0; i < 256; i++) {
-		if (terminals[i]) {
-			printf("%c ", i);
-		}
-	}
-	printf("\n");
-	for (i = 0; i < 256; i++) {
-		if (productions[i].number) {
-			for (j = 0; j < productions[i].number; j++) {
-				printf("%c -> %s\n", i, productions[i].list[j].c);
-			}
-
-		}
-	}
-*/
 	computeLeading(variables, terminals, productions);
 	computeTrailing(variables, terminals, productions);
 	return 0;
