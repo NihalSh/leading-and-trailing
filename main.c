@@ -43,6 +43,7 @@ int main()
 	}
 */
 	computeLeading(variables, terminals, productions);
+	computeTrailing(variables, terminals, productions);
 	return 0;
 }
 
@@ -95,6 +96,57 @@ int computeLeading(int * variables, int * terminals, Production productions[256]
 	expand(variables, leading);
 	printf("\nLeading\n");
 	display(variables, leading);
+}
+
+int computeTrailing(int * variables, int * terminals, Production productions[256])
+{
+	int i;
+	int j;
+	int k;
+	int ** trailing = (int **) malloc(256 * sizeof(int *));
+	for (i = 0; i < 256; i++) {
+		if (variables[i]) {
+			trailing[i] = (int *) malloc(256 * sizeof(int));
+		}
+		else {
+			trailing[i] = NULL;
+		}
+	}
+	for (i = 0; i < 256; i++) {
+		if (variables[i]) {
+			//iterate over the production for a given symbol
+			for (j = 0; j < productions[i].number; j++) {
+				char currSymbol = '\0';
+				int notNullableEncountered = 0;
+				for (k = productions[i].list[j].number - 1; k >= 0; k--) {
+					currSymbol = productions[i].list[j].c[k];
+					if (terminals[currSymbol]) {
+						trailing[i][currSymbol] = 1;
+						break;
+					} else if (variables[currSymbol]) {
+						if (notNullableEncountered) {
+							;
+						} else {
+							if (isNullable(productions[currSymbol])) {
+
+							} else {
+								notNullableEncountered = 1;
+							}
+							trailing[i][currSymbol] = 1;//add to trailing variables till the not nullable variable is encountered
+						}
+					} else if (currSymbol == '\0') {
+						//null symbol
+						;
+					}else {
+						printf("error: no idea what happended, character = %c\n", currSymbol);
+					}
+				}
+			}
+		}
+	}
+	expand(variables, trailing);
+	printf("\nTrailing\n");
+	display(variables, trailing);
 }
 
 int expand(int * variables, int ** leadingOrTrailing)
