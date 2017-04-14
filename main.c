@@ -51,41 +51,77 @@ int computeLeading(int * variables, int * terminals, Production productions[256]
 	int i;
 	int j;
 	int k;
-	printf("\nLeading\n");
+	int ** leading = (int **) malloc(256 * sizeof(int *));
 	for (i = 0; i < 256; i++) {
 		if (variables[i]) {
-			printf("%c => { ", i);
+			leading[i] = (int *) malloc(256 * sizeof(int));
+		}
+		else {
+			leading[i] = NULL;
+		}
+	}
+	for (i = 0; i < 256; i++) {
+		if (variables[i]) {
 			//iterate over the production for a given symbol
 			for (j = 0; j < productions[i].number; j++) {
-				int loopOnVariable = i;
-				char firstVariable = '\0';
-				char firstTerminal = '\0';
 				char currSymbol = '\0';
-				while (loopOnVariable != '\0') {
-					firstVariable = '\0';
-					for (k = 0; k < productions[loopOnVariable].list[j].number; k++) {
-						currSymbol = productions[loopOnVariable].list[j].c[k];
-						if (terminals[currSymbol]) {
-							firstTerminal = currSymbol;
-							printf("%c ", firstTerminal);
-							break;
-						} else if (variables[currSymbol]) {
-							if ((firstVariable == '\0')) {
-								firstVariable = currSymbol;
-							}
-						} else if (currSymbol == '\0') {
-							//null symbol
+				int notNullableEncountered = 0;
+				for (k = 0; k < productions[i].list[j].number; k++) {
+					currSymbol = productions[i].list[j].c[k];
+					if (terminals[currSymbol]) {
+						leading[i][currSymbol] = 1;
+						break;
+					} else if (variables[currSymbol]) {
+						if (notNullableEncountered) {
 							;
-						}else {
-							printf("error: no idea what happended, character = %c\n", currSymbol);
+						} else {
+							if (isNullable(productions[currSymbol])) {
+
+							} else {
+								notNullableEncountered = 1;
+							}
+							leading[i][currSymbol] = 1;//add to leading variables till the not nullable variable is encountered
 						}
+					} else if (currSymbol == '\0') {
+						//null symbol
+						;
+					}else {
+						printf("error: no idea what happended, character = %c\n", currSymbol);
 					}
-					loopOnVariable = firstVariable;
+				}
+			}
+		}
+	}
+	printf("\nLeading\n");
+	display(variables, leading);
+}
+
+int display(int * variables, int ** leading)
+{
+	int i;
+	int j;
+	for (i = 0; i < 256; i++) {
+		if (variables[i]) {
+			printf("(%c) = { ", i);
+			for (j = 0; j < 256; j++) {
+				if (leading[i][j] == 1) {
+					printf("%c ", j);
 				}
 			}
 			printf("}\n");
 		}
 	}
+	return 0;
+}
+
+int isNullable(Production production) {
+	int i;
+	for (i = 0; i < production.number; i++) {
+		if (production.list[i].number && (production.list[i].c[0] == '\0')) {
+			return 1;
+		}
+	}
+	return 0;
 }
 
 int getInput(int * variables, int * terminals, Production productions[256])
